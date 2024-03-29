@@ -48,12 +48,16 @@ const addNewCard = async (req, res) => {
 
 const createCharges = async (req, res) => {
   try {
-    const createCharge = await stripe.charges.create({
-      receipt_email: "tester@gmail.com",
-      amount: parseInt(req.body.amount) * 100, //amount*100
-      currency: "INR",
-      card: req.body.card_id,
+    const createCharge = await stripe.subscriptions.create({
       customer: req.body.customer_id,
+      items: [
+        {
+          price: "price_1OzHGHDxB24495nYwQL1uCV9",
+        },
+      ],
+      billing_cycle_anchor: Math.floor(Date.now() / 1000),
+      expand: ["latest_invoice.payment_intent"],
+      default_payment_method: req.body.card_id,
     });
 
     res.status(200).send(createCharge);
